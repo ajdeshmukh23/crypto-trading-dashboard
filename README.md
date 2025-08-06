@@ -55,13 +55,6 @@ crypto-dashboard/
 │   ├── docker-compose.prod.yml     # Production setup
 │   ├── Dockerfile.frontend         # Frontend container
 │   └── Dockerfile.frontend.prod    # Production frontend
-│
-├── docs/                  # Documentation
-│   ├── design/           # System design documents
-│   ├── testing/          # Test cases and coverage
-│   └── videos/           # Video documentation scripts
-│
-└── LICENSE               # MIT License
 ```
 
 ## Quick Start
