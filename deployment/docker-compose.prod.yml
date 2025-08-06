@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: crypto-db
+    environment:
+      POSTGRES_USER: crypto_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-crypto_password}
+      POSTGRES_DB: crypto_dashboard
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - crypto-network
+    restart: unless-stopped
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: crypto-backend
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://crypto_user:${DB_PASSWORD:-crypto_password}@postgres:5432/crypto_dashboard
+      PORT: 3001
+    networks:
+      - crypto-network
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  # Frontend React App (Production)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: crypto-frontend
+    ports:
+      - "80:80"
+    networks:
+      - crypto-network
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  crypto-network:
+    driver: bridge
